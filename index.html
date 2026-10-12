@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mes Heures</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500&display=swap">
+</head>
+<body>
+<div class="wrap">
+
+  <!-- PLANNING -->
+  <section id="tab-planning" class="tab">
+    <header class="top">
+      <div>
+        <h1>Mes Heures</h1>
+        <p class="sub" id="weekLabel"></p>
+      </div>
+      <div class="nav">
+        <button class="btn" id="prev" aria-label="Semaine précédente">←</button>
+        <button class="btn" id="todayBtn">Aujourd'hui</button>
+        <button class="btn" id="next" aria-label="Semaine suivante">→</button>
+      </div>
+    </header>
+    <div class="week" id="week"></div>
+    <div class="panel">
+      <div class="panel-head">
+        <h2 id="dayTitle"></h2>
+        <div class="legend" id="legend"></div>
+      </div>
+      <div class="slots" id="slots"></div>
+    </div>
+    <div class="panel">
+      <h2>Bilan de la semaine</h2>
+      <div class="stats" id="stats"></div>
+    </div>
+  </section>
+
+  <!-- CONSEIL IA -->
+  <section id="tab-ia" class="tab" hidden>
+    <header class="top"><h1>Conseil IA</h1></header>
+    <div class="panel">
+      <div class="row" id="ideas"></div>
+      <label for="q">Ta question
+        <textarea id="q" placeholder="Ex. : Comment créer une rose en impression 3D ?"></textarea>
+      </label>
+      <div class="row">
+        <button class="btn primary" id="ask">Demander à Gemini</button>
+        <button class="btn" id="planAsk">Conseils sur ma journée</button>
+      </div>
+      <div class="answer" id="answer"><span class="hint">La réponse s'affichera ici.</span></div>
+    </div>
+  </section>
+
+  <!-- RÉGLAGES -->
+  <section id="tab-reglages" class="tab" hidden>
+    <header class="top"><h1>Réglages</h1></header>
+
+    <div class="panel">
+      <h2>Notifications</h2>
+      <label class="sw"><input type="checkbox" id="n-enabled" data-path="notif.enabled"> Activer les notifications</label>
+      <div class="status">
+        <div class="st-row"><span>Autorisation</span><span id="permState" class="pill">…</span><button class="btn sm" id="permBtn">Autoriser</button></div>
+        <div class="st-row"><span>Alarmes exactes</span><span id="exactState" class="pill">…</span><button class="btn sm" id="exactBtn">Ouvrir le réglage</button></div>
+        <p class="hint">Sans alarmes exactes, Android peut décaler les rappels de quelques minutes.</p>
+      </div>
+
+      <fieldset>
+        <legend>Par tranche planifiée</legend>
+        <div class="line">
+          <label class="sw"><input type="checkbox" id="n-avant" data-path="notif.avant.on"> Rappel avant chaque tranche</label>
+          <select id="n-avant-min" data-path="notif.avant.minutes" data-num aria-label="Délai du rappel">
+            <option value="0">à l'heure pile</option><option value="5">5 min avant</option><option value="10">10 min avant</option>
+            <option value="15">15 min avant</option><option value="30">30 min avant</option><option value="60">1 h avant</option>
+          </select>
+        </div>
+        <div class="line">
+          <label class="sw"><input type="checkbox" id="n-fin" data-path="notif.fin.on"> Fin de tranche (et ce qui suit)</label>
+          <select id="n-fin-min" data-path="notif.fin.minutes" data-num aria-label="Délai de fin">
+            <option value="0">à la fin</option><option value="5">5 min avant la fin</option><option value="10">10 min avant la fin</option>
+          </select>
+        </div>
+        <p class="hint">Catégories concernées :</p>
+        <div class="cats-check" id="catChecks"></div>
+        <p class="hint">Chaque tranche peut aussi avoir son propre rappel (dans l'éditeur de la tranche).</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Toutes les heures</legend>
+        <label class="sw"><input type="checkbox" id="n-horaire" data-path="notif.horaire.on"> Point horaire</label>
+        <div class="line">
+          <span>de</span><select id="n-h-deb" data-path="notif.horaire.debut" data-num data-hours aria-label="Début"></select>
+          <span>à</span><select id="n-h-fin" data-path="notif.horaire.fin" data-num data-hours aria-label="Fin"></select>
+        </div>
+        <label class="sw"><input type="checkbox" id="n-h-libres" data-path="notif.horaire.seulementLibres"> Seulement les heures non planifiées</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Résumés</legend>
+        <div class="line">
+          <label class="sw"><input type="checkbox" id="n-matin" data-path="notif.matin.on"> Programme du jour à</label>
+          <input type="time" id="n-matin-h" data-path="notif.matin.heure">
+        </div>
+        <div class="line">
+          <label class="sw"><input type="checkbox" id="n-soir" data-path="notif.soir.on"> Préparer demain à</label>
+          <input type="time" id="n-soir-h" data-path="notif.soir.heure">
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Heures calmes</legend>
+        <label class="sw"><input type="checkbox" id="n-calme" data-path="notif.calme.on"> Pas de rappel automatique</label>
+        <div class="line">
+          <span>de</span><select id="n-c-deb" data-path="notif.calme.debut" data-num data-hours aria-label="Début"></select>
+          <span>à</span><select id="n-c-fin" data-path="notif.calme.fin" data-num data-hours aria-label="Fin"></select>
+        </div>
+        <p class="hint">Les rappels propres à une tranche et les résumés passent quand même.</p>
+      </fieldset>
+
+      <div class="line">
+        <span>Programmer à l'avance</span>
+        <select id="n-horizon" data-path="notif.horizon" data-num aria-label="Horizon">
+          <option value="3">3 jours</option><option value="7">7 jours</option><option value="14">14 jours</option>
+        </select>
+      </div>
+      <div class="row">
+        <button class="btn primary" id="testBtn">Tester (dans 5 s)</button>
+      </div>
+      <p class="hint" id="testMsg"></p>
+      <div>
+        <p class="hint" id="planCount"></p>
+        <ul class="upcoming" id="upcoming"></ul>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Journée</h2>
+      <div class="line">
+        <span>Afficher de</span><select id="j-deb" data-path="jour.debut" data-num data-hours aria-label="Début de journée"></select>
+        <span>à</span><select id="j-fin" data-path="jour.fin" data-num data-hours aria-label="Fin de journée"></select>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Conseil IA</h2>
+      <label for="key">Clé API Gemini
+        <input type="password" id="key" data-path="ia.key" placeholder="AIza…" autocomplete="off">
+      </label>
+      <label for="model">Modèle
+        <input type="text" id="model" data-path="ia.model">
+      </label>
+      <p class="hint">Clé gratuite sur aistudio.google.com, bouton « Get API key ». Elle reste sur le téléphone.</p>
+    </div>
+
+    <div class="panel">
+      <h2>Apparence</h2>
+      <div class="line">
+        <span>Thème</span>
+        <select id="theme" data-path="theme" aria-label="Thème">
+          <option value="auto">Comme le téléphone</option><option value="light">Clair</option><option value="dark">Sombre</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Sauvegarde</h2>
+      <div class="row">
+        <button class="btn" id="exportBtn">Exporter</button>
+        <button class="btn" id="importBtn">Importer le texte collé</button>
+        <button class="btn danger" id="resetBtn">Vider le planning</button>
+      </div>
+      <textarea id="io" placeholder="Le texte de sauvegarde apparaît ici. Pour importer, colle une sauvegarde puis « Importer »."></textarea>
+      <p class="hint" id="ioMsg"></p>
+    </div>
+  </section>
+</div>
+
+<nav class="tabs" aria-label="Navigation">
+  <button data-tab="planning" class="on"><span class="ico">▦</span>Planning</button>
+  <button data-tab="ia"><span class="ico">✦</span>Conseil IA</button>
+  <button data-tab="reglages"><span class="ico">⚙</span>Réglages</button>
+</nav>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
