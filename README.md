@@ -4,7 +4,6 @@ Planificateur de journée par tranches d'une heure, avec conseils Gemini et noti
 
 6 catégories : Créatif, Aide maison, Temps libre, Recherche idée / travail, Sport, Cuisine.
 
-![Captures de Mes Heures](docs/captures-clair.png)
 
 ## Télécharger l'APK
 
